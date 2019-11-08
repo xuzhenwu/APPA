@@ -14,7 +14,7 @@
 
 using namespace std;
 
-void channel_parallel(struct patch_struct *patch, double Target_Deviation, int Division_Times, int threads, int patch_num, double Resolution, double smallest_portion_channel_unit, struct out_inf* Out_Inf,int out_flag) {
+void channel_parallel(struct patch_struct *patch, double Target_Deviation, int Division_Times, int threads, int patch_num, double Resolution, double smallest_portion_channel_unit, struct inf* Out_Inf,int out_flag) {
 
 	//=======================================================================================================================
 	//1. LOCAL VARS(JUST SKIP IF YOU DONT WANT TO READ ABOUT IT)

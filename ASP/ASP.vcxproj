@@ -163,14 +163,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init_channel_parallel.cpp" />
-    <ClCompile Include="subbasin_parallel.cpp">
+    <ClCompile Include="hillslope_parallel.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="channel_parallel.cpp" />
-    <ClCompile Include="init_subbasin_parallel.cpp" />
+    <ClCompile Include="init_hillslope_parallel.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="print_threads_map.cpp" />
     <ClCompile Include="read_flow_table.cpp" />

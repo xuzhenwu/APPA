@@ -11,11 +11,11 @@
 
 using namespace std;
 
-void init_subbasin_parallel(struct patch_struct *patch,int patch_num) {
+void init_hillslope_parallel(struct patch_struct *patch,struct inf* INF) {
 
-	for (int pch = 0; pch != patch_num; pch++) {
+	for (int pch = 0; pch != INF->patch_num; pch++) {
 		//init re_acc_area
-		patch[pch].re_acc_area = patch[pch].acc_area;
+		patch[pch].re_hill_acc = patch[pch].hill_acc;
 		patch[pch].basin_inx = 0;
 		patch[pch].sthread= 0;
 	}
