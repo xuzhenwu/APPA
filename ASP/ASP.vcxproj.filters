@@ -27,13 +27,16 @@
     <ClCompile Include="channel_parallel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="init_channel_parallel.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="init_hillslope_parallel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="hillslope_parallel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="update_channel_parallel_within_layer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="init_channel_parallel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

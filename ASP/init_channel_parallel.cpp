@@ -11,60 +11,17 @@
 
 using namespace std;
 
-void init_channel_parallel(struct patch_struct *patch, int patch_num, int layer, int init_flag) {
+void init_channel_parallel(struct patch_struct *patch, struct inf *INF) {
 
-	if (init_flag == 0)//renew transient state
-		for (int pch = 0; pch != patch_num; pch++) {
-			//init re_acc_area
+	for (int pch = 0; pch != INF->patch_num; pch++) {
 
-			if (patch[pch].channel_state == 1 )
-			{
-				patch[pch].channel_state = 0;//as undefined
-				patch[pch].channel_inx = 0;
-				patch[pch].layer_thread = 0;
-				patch[pch].re_channel_acc = patch[pch].re_channel_acc_backup;//retained as backup value
-			}
-			if (patch[pch].lock_state != 0) {
-				patch[pch].re_channel_acc = patch[pch].re_channel_acc_backup; //retained as backup value
-			}
-			patch[pch].lock_state = 0;//unlocked all pch
-
-		}
-	else//as fianl thread
-		for (int pch = 0; pch != patch_num; pch++) {
-			//init re_acc_area
-
-			if (patch[pch].channel_state == 1 && patch[pch].landID == 1)
-			{
-				patch[pch].channel_state = 2;//as static
-				patch[pch].layer = layer+1;//start from 1
-				patch[pch].cthread = (layer+1) * 1000 + patch[pch].layer_thread;//into fianl numbers for cthread
-			}
+			patch[pch].channel_state = 0;//as undefined
+			patch[pch].channel_inx = 0;
+			patch[pch].layer_thread = 0;
+			patch[pch].re_channel_acc = patch[pch].channel_acc;//init as original channel_acc
 			patch[pch].lock_state = 0;
-		}
 
-	
-	for (int pch = 0; pch != patch_num; pch++) {
-
-		if (patch[pch].channel_state == 0 && patch[pch].landID == 1)	
-		{
-			patch[pch].re_channel_acc = 1;
-		}
 	}
-	for (int pch = 0; pch != patch_num; pch++) {
-
-		if (patch[pch].channel_state == 0 && patch[pch].landID == 1)
-		{
-			for (int neigh = 0; neigh < patch[pch].neigh_num; neigh++) {
-			
-				patch[patch[pch].neigh_pch[neigh]].re_channel_acc += patch[pch].re_channel_acc*patch[pch].neigh_gamma[neigh];
-			
-			}
-			
-		}
-	}
-	
-
 
 	return;
 }
