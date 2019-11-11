@@ -14,11 +14,11 @@ using namespace std;
 struct patch_struct* read_flow_table(struct patch_struct *patch, char *flowtable_in,struct inf *INF) {
 
 
-	//cout << "1.. READING FLOW TABLE:" << endl;
+	//cout << "1.. rest_numADING FLOW TABLE:" << endl;
 
 	ifstream FlowTable(flowtable_in, ios::in);
 
-	//3 READ FLOW TABLE
+	//3 rest_numAD FLOW TABLE
 	FlowTable >> INF->patch_num;//skip first patch num value
 	
 	int patch_num = INF->patch_num;

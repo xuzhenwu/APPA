@@ -14,79 +14,29 @@
 
 using namespace std;
 
-void channel_parallel(struct patch_struct *patch, double Target_Deviation, int Division_Times, int threads, int patch_num, double Resolution, double smallest_portion_channel_unit, struct inf* Out_Inf,int out_flag) {
+void channel_parallel(struct patch_struct *patch, double deviation_index, int threads, struct inf* INF,int out_flag) {
 
 	//=======================================================================================================================
-	//1. LOCAL VARS(JUST SKIP IF YOU DONT WANT TO READ ABOUT IT)
+	//1. LOCAL VARS(JUST SKIP IF YOU DONT WANT TO rest_numAD ABOUT IT)
 	//=======================================================================================================================
 
 	const int infinite = 99999999;
 	// while partitioning, num of subchannels will be more than the channel_num we want
 	// thus we need more memory for storage and by using optimize method we finally got sufficient channel_num
-	const int sub_channel_times(400);
-
-	int itmp{};
-	int precision{};
-	int first_round{};
-	int round_flag{};
-	int round_total{};
-	int optimize_flag{};
-	int new_main_channel_flag{};
-	int best_subchannel_pch_num{};
-	int best_subchannel_pch_ID{};
-	double best_deviation{};
-	int min_subchannel_pch_num{};
-	int min_subchannel_pch_ID{};
-	int max_flag{};
-	int max_channel_ID{};
-	int max_subchannel_ID_OUT{};
-	int max_channel_pch_num{};
-	int optimize_total{};
-	int break_flag{};
-
-	//double stream_boun = Stream_Boun_Area * 1000 * 1000 / (Resolution*Resolution);
-
-
-
-
-	//SUB-BASIN_ID IN FINAL THREADS
-	int *channel_inx_ID = new int[sub_channel_times * threads]{};
-	int *channel_pch_num = new int[sub_channel_times * threads]{};
-
-	//ID of subchannels in a channel 
-	int **final_subchannel_collection = new int *[threads] {};
-	for (int i = 0; i < threads; ++i)
-	{
-		final_subchannel_collection[i] = new int[threads*sub_channel_times]{};
-	}
-	//num of patches in a subchannel 
-	int **final_subchannel_pch_num = new int *[threads] {};
-	for (int i = 0; i < threads; ++i)
-	{
-		final_subchannel_pch_num[i] = new int[threads*sub_channel_times]{};
-	}
-
-	int *final_channel_pch_num = new int [threads] {};
-	//num of patches in a channel
-	int *final_pch_num = new int [threads] {};
-	//num of subchannels in a channel
-	int *final_subchannel_num = new int [threads] {};
-
 
 	//=======================================================================================================================
 	//1. STEP 1:ENIVIRONMENT SETTING
 	//=======================================================================================================================
+	//1.1 compute INF information
 	double smallest_unit = infinite;
-	Out_Inf->CN = 0;
-	Out_Inf->PN = 0;
-	Out_Inf->RE = 0;
-	for (int pch = 0; pch != patch_num; pch++) {
+	INF->channel_num = 0;
+	INF->partitioned_num = 0;
+	INF->rest_num = 0;
+	for (int pch = 0; pch != INF->patch_num; pch++) {
 
 		//the backup are used for renew
 		if (patch[pch].landID == 1) {
-
-			Out_Inf->CN++;
-
+			INF->channel_num++;
 			patch[pch].re_channel_acc_backup = patch[pch].re_channel_acc;
 
 			if (patch[pch].re_channel_acc > 0 && patch[pch].channel_inx == 0)
@@ -95,100 +45,102 @@ void channel_parallel(struct patch_struct *patch, double Target_Deviation, int D
 						smallest_unit = patch[pch].re_channel_acc;
 				}
 			if (patch[pch].channel_state != 0)
-				Out_Inf->PN++;
+				INF->partitioned_num++;
 			else
-				Out_Inf->RE++;
+				INF->rest_num++;
 		}
 	}
 
-
-	//SUB_BASINS CAUGHT IN STEP 1 
-	int **channel_pches = new int *[sub_channel_times * threads];
-	for (int i = 0; i < sub_channel_times * threads; i++)
+	//1.2 allocate memory for threads 
+	int **thread_pches = new int *[ threads];
+	for (int i = 0; i <  threads; i++)
 	{
-		channel_pches[i] = new int[Out_Inf->CN]{};
+		thread_pches[i] = new int[INF->patch_num]{};
 	}
+	int *thread_pch_num = new int[threads] {};
 
-
+	//1.3 specify objectives: TAI,TAM,TCHM
 	//add this line for avoiding re_channel_acc==1 
-	smallest_unit = Out_Inf->RE / threads * smallest_portion_channel_unit;
 	smallest_unit = 1;
-	double AT = smallest_unit * (1 + Target_Deviation);// Target ACC AREA
-	if (AT < 1) AT = 1;
-	if (Target_Deviation > 20)
-		int a = 0;
+	double Tchm = smallest_unit * (1 + deviation_index);// Target ACC Arest_numA
+	if (Tchm < 1) Tchm = 1;
 
 	//rest of channel grids in a thread
 	for (int inx = 0; inx != threads; inx++) {
-		Out_Inf->RE_CH[inx] = AT;
+		INF->TAi[inx] = Tchm;
 	}
-	double RE_CH_smallest;
-	Out_Inf->CUN = 0;
+	double TAi_smallest;
+	double TAM;
+
+	INF->channel_unit_num = 0;
 
 	// the ID of channel num 
-	int channel_inx = 0;//start from 0 and controls the num of subchannels (before we optimize it)
+	int thread_inx = 0;//start from 0 and controls the num of subchannels (before we optimize it)
 
 	//=======================================================================================================================
-	//2. STEP 2:CHANNEL UNITS PARTITION
+	//2. STEP 2: SCHEME GENERATION
 	//=======================================================================================================================
-	//rest patches waited for distribution
 	int partition_flag;
 	//START PARTITIONING
 	do {
-
+		//init local parameters in each round of partition
 		partition_flag = 0;
-
-		new_main_channel_flag = 0;
-
-		//INIT
-		best_subchannel_pch_num = 0;
-		best_subchannel_pch_ID = 0;
-		best_deviation = infinite;
+		int best_channel_pch_num{};
+		int best_channel_pch_ID{};
+		double best_deviation=infinite;
 
 		//---------------------------------------------------------------------------------------------------------------------------
-		// START SEACHING FOR IDEAL SUBBAISN ASSEMBLE FROM THE HIGHEST PATCH 
+		// 2.1 CHANNEL PARTITION
 		//---------------------------------------------------------------------------------------------------------------------------
-		for (int pch = 0; pch != patch_num; pch++) {
+
+		//define TAM and thread_inx
+		TAM = 0;
+		for (int inx = 0; inx != threads; inx++) {
+			if (INF->TAi[inx] > TAM)
+			{
+				TAM = INF->TAi[inx]; thread_inx = inx;
+			}
+		}
+		if (fabs(TAM) < 0.000001)//when there is no avaible vacumn
+			break;
+
+		//search for satisfied outlet
+		for (int pch = 0; pch != INF->patch_num; pch++) {
 
 			//stream patches that are remained 
+			if(patch[pch].landID==1)
 			if (patch[pch].re_channel_acc > 0)
 				if (patch[pch].channel_state == 0)//unmatched 
 					if (patch[pch].lock_state == 0)//unlocked downstream points
 					{
 						//find best ID
-						//there is no need for && patch[pch].re_channel_acc <= AT
-						if (fabs(patch[pch].re_channel_acc - AT) < best_deviation && patch[pch].re_channel_acc <= AT) {//when there is good partition
+						if (fabs(patch[pch].re_channel_acc - TAM) < best_deviation && patch[pch].re_channel_acc <= TAM) {//when there is good partition
 
-							best_subchannel_pch_num = channel_pch_num[channel_inx];
-							best_subchannel_pch_ID = pch;
-							best_deviation = fabs(patch[pch].re_channel_acc - AT);
+							best_channel_pch_num = thread_pch_num[thread_inx];
+							best_channel_pch_ID = pch;
+							best_deviation = fabs(patch[pch].re_channel_acc - TAM);
 							partition_flag = 1;
 						}
 					}
-
-		}
-		if (partition_flag == 0) { // when no satisfactory outlet remained
-
-			break;  //break out of partition
-		}
-		//END OF SERCHING  
-
+		}//end of search
+		if (partition_flag == 0)// with no satisfactory outlet
+			break; //break out of partition
+	
 		//---------------------------------------------------------------------------------------------------------------------------
-		//STARTING DISTRIBUTION AND RENEW re_channel_acc
+		//2.2 THREAD ALLOCATION
 		//---------------------------------------------------------------------------------------------------------------------------
-
 		int partition_num = 0;
 
 
 		//add first ID in the list
-		channel_pches[channel_inx][(channel_pch_num[channel_inx])] = patch[best_subchannel_pch_ID].patchID;
+		thread_pches[thread_inx][(thread_pch_num[thread_inx])] = patch[best_channel_pch_ID].patchID;
 
 		//add boundary
-		channel_pch_num[channel_inx]++;
+		thread_pch_num[thread_inx]++;
 		partition_num++;
 
-		//searching for upslope undefined patches
-		for (int up_pch_inx = best_subchannel_pch_ID - 1; up_pch_inx >= 0; up_pch_inx--) {
+		//define upstream grids
+		for (int up_pch_inx = best_channel_pch_ID - 1; up_pch_inx >= 0; up_pch_inx--) {
 
 			// only when it's unlabelled
 			if (patch[up_pch_inx].channel_inx == 0 && patch[up_pch_inx].landID == 1) {
@@ -196,144 +148,100 @@ void channel_parallel(struct patch_struct *patch, double Target_Deviation, int D
 				for (int neigh = 0; neigh != patch[up_pch_inx].neigh_num; neigh++) {
 
 					//check the list now in this channels
-					for (int channel_pch_inx = 0; channel_pch_inx != channel_pch_num[channel_inx]; channel_pch_inx++) {
+					for (int channel_pch_inx = 0; channel_pch_inx != thread_pch_num[thread_inx]; channel_pch_inx++) {
 
 						//when it's neigh is in the channel list
-						if (patch[up_pch_inx].neigh_ID[neigh] == channel_pches[channel_inx][channel_pch_inx])
+						if (patch[up_pch_inx].neigh_ID[neigh] == thread_pches[thread_inx][channel_pch_inx])
 							if (patch[up_pch_inx].channel_state == 0)
 							{
 
 								//add label
-								patch[up_pch_inx].channel_inx = channel_inx + 1;//start from 1
+								patch[up_pch_inx].channel_inx = thread_inx + 1;//start from 1
 								patch[up_pch_inx].channel_state = 1;//transient state
 								patch[up_pch_inx].re_channel_acc = 0;
 
 								//add it's ID in the channel list
-								channel_pches[channel_inx][(channel_pch_num[channel_inx])] = patch[up_pch_inx].patchID;
-								channel_pch_num[channel_inx]++;
+								thread_pches[thread_inx][(thread_pch_num[thread_inx])] = patch[up_pch_inx].patchID;
+								thread_pch_num[thread_inx]++;
 								partition_num++;
-								Out_Inf->RE_CH[channel_inx] --;
 
 								break;
 							}
 					}
-
 				}
 			}
-
 		}//end of seaching it's upslope area
 
 
-		if (partition_num != patch[best_subchannel_pch_ID].re_channel_acc)
-			exit(-55);
+		if (fabs(partition_num - patch[best_channel_pch_ID].re_channel_acc) >0.001)
+			cout << "it the channel grids with no eqaul tg or there is an error in partition?" << endl;
 
-		patch[best_subchannel_pch_ID].channel_inx = channel_inx + 1;//start from 1
-		patch[best_subchannel_pch_ID].channel_state = 1;
-		Out_Inf->RE_CH[channel_inx] --;
-
-
+		patch[best_channel_pch_ID].channel_inx = thread_inx + 1;//start from 1
+		patch[best_channel_pch_ID].channel_state = 1;
+		INF->TAi[thread_inx] -= patch[best_channel_pch_ID].re_channel_acc;
 
 		//renew re_channel_pch
 		// in an desending order to to final channel outlet
 		int up_pch = 0;
-		int down_pch = best_subchannel_pch_ID;
+		int down_pch = best_channel_pch_ID;
 		//searching downslope area
-		while (down_pch != patch_num - 1) {
+		while (down_pch != INF->patch_num - 1) {
 
 			up_pch = down_pch;
 
 			//search for down pch
 
-			for (down_pch = up_pch + 1; down_pch != patch_num; down_pch++) {
+			for (down_pch = up_pch + 1; down_pch != INF->patch_num; down_pch++) {
 				if (patch[down_pch].patchID == patch[up_pch].neigh_ID[0])
 					break;
 			}
 
-			patch[down_pch].re_channel_acc -= patch[best_subchannel_pch_ID].re_channel_acc;
+			patch[down_pch].re_channel_acc -= patch[best_channel_pch_ID].re_channel_acc;
 			patch[down_pch].lock_state = 1;
 		} //till outlet
 
-		patch[best_subchannel_pch_ID].re_channel_acc = 0;
+		patch[best_channel_pch_ID].re_channel_acc = 0;
 		
-		Out_Inf->CUN += 1;
-
-		//after divided
-		channel_inx++;
-		//cout << channel_inx << "\t" << channel_pch_num[channel_inx - 1] << "\t" << rest_num << endl;
-		//---------------------------------------------------------------------------------------------------------------------------
-		// END OF COMPASATION PROCESS FOR FINDING SUBBASINS
-		//---------------------------------------------------------------------------------------------------------------------------
-
-		//when there is too much channel units
-		RE_CH_smallest = 0;
-		for (int inx = 0; inx != threads; inx++) {
-			if (Out_Inf->RE_CH[inx] > RE_CH_smallest)
-			{
-				RE_CH_smallest = Out_Inf->RE_CH[inx];
-				channel_inx = inx;
-			}
-		}
-		AT = Out_Inf->RE_CH[channel_inx];
-
+		INF->channel_unit_num += 1;//an extra unit partitioned
 
 	} while (partition_flag == 1);
 
-
-	
-
 	//correlating final channels with final thread
 	int *channel_num = new int[threads] {};
-	for (int pch = 0; pch != patch_num; pch++) {
-
+	for (int pch = 0; pch != INF->patch_num; pch++) {
 		if (patch[pch].channel_state == 1) {
-
 			//start from 1
 			patch[pch].layer_thread = patch[pch].channel_inx;
 			channel_num[patch[pch].channel_inx - 1]++;
 		}
 	}
 
-	//CHECK SPEED UP RATIO
-	double Max_Channel_Thread = 0;
-	double Final_Channel_Num = 0;
-	//sum up 
-	for (channel_inx = 0; channel_inx != threads; channel_inx++) {
-		Final_Channel_Num += channel_num[channel_inx];
-	}
+	//compute hsr
+	TAM = 0;
+	double TV = 0;
+
 	//search for max
-	for (channel_inx = 0; channel_inx != threads; channel_inx++) {
-		if (channel_num[channel_inx] > Max_Channel_Thread)
-			Max_Channel_Thread = channel_num[channel_inx];
+	for (thread_inx = 0; thread_inx != threads; thread_inx++) {
+		INF->TAi[thread_inx] = Tchm - INF->TAi[thread_inx];
+		TV += INF->TAi[thread_inx];
+		if (INF->TAi[thread_inx] > TAM)
+			TAM = INF->TAi[thread_inx];
 	}
-	Out_Inf->SR = Final_Channel_Num / Max_Channel_Thread;
+	INF->SR=INF->CSR = TV /TAM;
 
-	Out_Inf->RE = 0;
-	for (int pch = 0; pch != patch_num; pch++) {
+	//might be deleted in time of next check
+	INF->rest_num = 0;
+	for (int pch = 0; pch != INF->patch_num; pch++) {
 		if (patch[pch].landID == 1 && patch[pch].channel_state == 0)
-			Out_Inf->RE++;
+			INF->rest_num++;
 	}
-	Out_Inf->PN = Out_Inf->CN - Out_Inf->RE - Out_Inf->PN;
+	INF->partitioned_num = INF->channel_num - INF->rest_num - INF->partitioned_num;
 
-
-	//FREE MEMORY
-	for (int i = 0; i < sub_channel_times * threads; ++i)
-		delete[] channel_pches[i];
-	delete[] channel_pches;
-
-	delete[] channel_inx_ID;
-	delete[] channel_pch_num;
-
+	//free memory
 	for (int i = 0; i < threads; ++i)
-		delete[] final_subchannel_collection[i];
-	delete[] final_subchannel_collection;
-
-	for (int i = 0; i < threads; ++i)
-		delete[]  final_subchannel_pch_num[i];
-	delete[] final_subchannel_pch_num;
-
-	delete[] final_channel_pch_num;
-	delete[] final_pch_num;
-	delete[] final_subchannel_num;
+		delete[] thread_pches[i];
+	delete[] thread_pches;
+	delete[] thread_pch_num;
 
 	return;
-}//END OF ASP
+}//end of channel parallelization

@@ -13,6 +13,8 @@ using namespace std;
 
 void init_channel_parallel(struct patch_struct *patch, struct inf *INF) {
 
+
+	//prepare channel information
 	for (int pch = 0; pch != INF->patch_num; pch++) {
 
 			patch[pch].channel_state = 0;//as undefined
@@ -22,6 +24,8 @@ void init_channel_parallel(struct patch_struct *patch, struct inf *INF) {
 			patch[pch].lock_state = 0;
 
 	}
+
+	//prepare INF information
 
 	return;
 }
