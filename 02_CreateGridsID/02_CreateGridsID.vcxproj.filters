@@ -15,32 +15,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="read_flow_table.cpp">
+    <ClCompile Include="02_CreateGridsID.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="print_threads_map.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="channel_parallel.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="init_hillslope_parallel.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="hillslope_parallel.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="update_channel_parallel_within_layer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="init_channel_parallel.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="APPA.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="PARA.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

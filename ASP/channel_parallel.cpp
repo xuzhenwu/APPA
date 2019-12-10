@@ -14,7 +14,7 @@
 
 using namespace std;
 
-void channel_parallel(struct patch_struct *patch, double deviation_index, int threads, struct inf* INF,int out_flag) {
+void channel_parallel(struct patch_struct *patch, double Tchm, int threads, struct inf* INF,int out_flag) {
 
 	//=======================================================================================================================
 	//1. LOCAL VARS(JUST SKIP IF YOU DONT WANT TO rest_numAD ABOUT IT)
@@ -61,9 +61,6 @@ void channel_parallel(struct patch_struct *patch, double deviation_index, int th
 
 	//1.3 specify objectives: TAI,TAM,TCHM
 	//add this line for avoiding re_channel_acc==1 
-	smallest_unit = 1;
-	double Tchm = smallest_unit * (1 + deviation_index);// Target ACC Arest_numA
-	if (Tchm < 1) Tchm = 1;
 
 	//rest of channel grids in a thread
 	for (int inx = 0; inx != threads; inx++) {

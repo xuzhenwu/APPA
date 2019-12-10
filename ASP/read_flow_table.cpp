@@ -14,7 +14,7 @@ using namespace std;
 struct patch_struct* read_flow_table(struct patch_struct *patch, char *flowtable_in,struct inf *INF) {
 
 
-	//cout << "1.. rest_numADING FLOW TABLE:" << endl;
+	cout << "read flow routing information:" ;
 
 	ifstream FlowTable(flowtable_in, ios::in);
 
@@ -141,7 +141,7 @@ struct patch_struct* read_flow_table(struct patch_struct *patch, char *flowtable
 	//compute theoretical maximum speedup ratio of chanel processes
 	INF->tmsr_ch = total / (llength);
 
-	cout << "COMPLETED IN FLOW TABLE\n" << endl;
+	cout << "complete\n" << endl;
 	return (patch);//return the point of the patch array
 }
 
