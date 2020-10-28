@@ -46,6 +46,14 @@ void CReadCommandline::initialize(){
 	CReadCommandline::tga = true;//TOTAL GAMMA (FLOW GENERATION)
 	CReadCommandline::twi = true;
 
+	CReadCommandline::acc = false;
+	CReadCommandline::dts = false;
+	CReadCommandline::sts = false;
+	CReadCommandline::dtr = false;
+	CReadCommandline::str = false;
+	CReadCommandline::tga = false;
+	CReadCommandline::twi = false;
+
 
 
 	if (CReadCommandline::algorithm_flag == 6) {
