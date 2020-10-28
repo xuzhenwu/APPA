@@ -371,6 +371,8 @@ void  compute_gamma(struct flow_struct *flow_table, int num_patches, int sc_flag
 		compute_gamma_RMD_inf(flow_table, num_patches, sc_flag, cell, algorithm_flag, pch_boun, thread_inx);
 	else if (algorithm_flag == 4)
 		compute_gamma_MFD_MD(flow_table, num_patches, sc_flag, cell, algorithm_flag, pch_boun, thread_inx);
+	else if (algorithm_flag == 6)//for parallel
+		compute_gamma_D8(flow_table, num_patches, sc_flag, cell, algorithm_flag, pch_boun, thread_inx);
 	else
 		cerr << "An undefined algorithm_flag." << endl;
 

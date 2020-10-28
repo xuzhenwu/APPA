@@ -3,7 +3,7 @@
 //BLENDER.H
 #ifndef Blender_H_
 #define Blender_H_
-#define MAXS   100	// size of filename string
+#define MAXS   200	// size of filename string
 #define LEN_GRASSHEADER 12
 #define LEN_ARCHEADER	12 
 

@@ -19,7 +19,7 @@ void CReadCommandline::initialize(){
 	CReadCommandline::prefix_flag = 0;	// input prefix flag 
 
 	//DEFINE ALGORITHM FLAG
-	CReadCommandline::algorithm_flag = 0 ;	//0:D8;1:MD8;2;D_INF;3:RMD_INF;4:MFD-MD;5:MD_inf
+	CReadCommandline::algorithm_flag = 0 ;	//0:D8;1:MD8;2;D_INF;3:RMD_INF;4:MFD-MD;5:MD_inf; 6:parallel/D8
 	
 	//pch should be true since it's useful for resoting CHESS -p file into images
 	CReadCommandline::pch = true;
@@ -38,13 +38,13 @@ void CReadCommandline::initialize(){
 	
 	
 	
-	CReadCommandline::acc = false;//ACC AREA
-	CReadCommandline::dts = false;//HORIZONTAL FLOW DISTANCE TO STREAM  
-	CReadCommandline::sts = false;//HORIZONTAL FLOW STEPS TO STREAM
-	CReadCommandline::dtr = false;//HORIZONTAL FLOW DISTANCE FROM RIDGE 
-	CReadCommandline::str = false;//HORIZONTAL FLOW STEPS FROM RIDGE
-	CReadCommandline::tga = false;//TOTAL GAMMA (FLOW GENERATION)
-	CReadCommandline::twi = false;
+	CReadCommandline::acc = true;//ACC AREA
+	CReadCommandline::dts = true;//HORIZONTAL FLOW DISTANCE TO STREAM  
+	CReadCommandline::sts = true;//HORIZONTAL FLOW STEPS TO STREAM
+	CReadCommandline::dtr = true;//HORIZONTAL FLOW DISTANCE FROM RIDGE 
+	CReadCommandline::str = true;//HORIZONTAL FLOW STEPS FROM RIDGE
+	CReadCommandline::tga = true;//TOTAL GAMMA (FLOW GENERATION)
+	CReadCommandline::twi = true;
 
 	
 	CReadCommandline::width = 5;			// default road width

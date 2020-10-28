@@ -371,6 +371,8 @@ void  compute_gamma(struct flow_struct *flow_table, int num_patches, int sc_flag
 		compute_gamma_RMD_inf(flow_table, num_patches, sc_flag, cell, algorithm_flag, pch_boun, thread_inx);
 	else if (algorithm_flag == 4)
 		compute_gamma_MFD_MD(flow_table, num_patches, sc_flag, cell, algorithm_flag, pch_boun, thread_inx);
+	else if (algorithm_flag == 6)
+		compute_gamma_D8(flow_table, num_patches, sc_flag, cell, algorithm_flag, pch_boun, thread_inx);
 	else
 		cerr << "An undefined algorithm_flag." << endl;
 
@@ -657,7 +659,7 @@ void compute_gamma_MD8(flow_struct *flow_table, int num_patches, int sc_flag, do
 		num_acc[num_patch]++;
 
 		//CHECK IF TOTAL_GAMMA IS TOO SMALL
-		if (flow_table[pch].total_gamma < 0.001) flow_table[pch].total_gamma = 0.001;
+		if (flow_table[pch].total_gamma < 0.03) flow_table[pch].total_gamma = 0.03;
 		if (pch % 10000 == 0) cout <<"\t"<< pch/ 10000 << " finished" << endl;
 	}//end of a pch
 	cout << "MD8\nNumber of downslope cells receiving water:" <<thread_inx<< endl;
@@ -2778,7 +2780,7 @@ void	CreatFlowTable::print_flow_table(int num_patches, flow_struct *flow_table, 
 	double mult, tmp, unidirectional;
 	static int count = 0;
 	char name[256];
-	char algorithm[6][10]{ "D8", "MD8", "D_inf", "RMD_inf", "MFD_md","MD_inf" };
+	char algorithm[7][10]{ "D8", "MD8", "D_inf", "RMD_inf", "MFD_md","MD_inf", "parallel" };
 	ofstream FlowTable;
 
 	strcpy_s(name, input_prefix);
@@ -2846,7 +2848,7 @@ void	CreatFlowTable::print_flow_table(int num_patches, flow_struct *flow_table, 
 			adj_ptr = adj_ptr->next;
 		}
 
-		if (flow_table[i].total_gamma < 0.001) flow_table[i].total_gamma = 0.001;
+		if (flow_table[i].total_gamma < 0.04) flow_table[i].total_gamma = 0.04;
 
 
 		FlowTable << fixed << right << setw(8) << flow_table[i].patchID
@@ -2858,7 +2860,7 @@ void	CreatFlowTable::print_flow_table(int num_patches, flow_struct *flow_table, 
 			<< setw(14) << setprecision(10) << flow_table[i].total_gamma
 			<< setw(4) << flow_table[i].num_adjacent - count << endl;
 		
-		if (flow_table[i].total_gamma < 0.001) cout << flow_table[i].patchID<<"\t"<< flow_table[i].total_gamma << endl;
+		if (flow_table[i].total_gamma < 0.04) cout << flow_table[i].patchID<<"\t"<< flow_table[i].total_gamma << endl;
 
 
 		/*
@@ -2875,9 +2877,14 @@ void	CreatFlowTable::print_flow_table(int num_patches, flow_struct *flow_table, 
 
 		adj_ptr = flow_table[i].adj_list;
 		for (j = 1; j <= flow_table[i].num_adjacent; j++) {
-
-			if (adj_ptr->gamma > 0.)//inx-1 equals to patchorder starts from 0
-				FlowTable << setw(13) << adj_ptr->inx-1<< setw(13) << adj_ptr->patchID << setw(13) << setprecision(8) << adj_ptr->gamma << endl;
+			if(algorithm_flag == 6 ){
+				if (adj_ptr->gamma > 0.)//original version
+					FlowTable << setw(13) << adj_ptr->inx-1<< setw(13) << adj_ptr->patchID << setw(13) << setprecision(8) << adj_ptr->gamma << endl;
+			}
+			else{
+				if (adj_ptr->gamma > 0.)//inx-1 equals to patchorder starts from 0
+					FlowTable << setw(13) << adj_ptr->patchID << setw(13) << setprecision(8) << adj_ptr->gamma << endl;
+			}
 			adj_ptr = adj_ptr->next;
 		}
 
