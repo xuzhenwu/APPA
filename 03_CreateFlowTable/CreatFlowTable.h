@@ -2336,7 +2336,6 @@ void CreatFlowTable::print_topo_indices(int num_patches, struct flow_struct * fl
 	}
 
 
-
 	if (commandline->acc == true) {
 
 		strcpy(acc_dat, input_prefix);
