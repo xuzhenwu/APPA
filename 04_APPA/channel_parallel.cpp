@@ -1,6 +1,3 @@
-//---------------------------------------------------------------------------------------------------------------------------
-//MAJOR FUNCTION OF ASP
-//---------------------------------------------------------------------------------------------------------------------------
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,7 +7,7 @@
 #include <iomanip>
 #include <string>
 #include <time.h>
-#include "PARA.h"
+#include "APPA.h"
 
 using namespace std;
 

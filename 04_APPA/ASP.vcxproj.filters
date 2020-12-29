@@ -27,9 +27,6 @@
     <ClCompile Include="init_hillslope_parallel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="hillslope_parallel.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="update_channel_parallel_within_layer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -37,9 +34,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="APPA.cpp" />
+    <ClCompile Include="hillslope_parallel_subset.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PARA.h">
+    <ClInclude Include="..\..\..\hideinsubtropicalforest\APPA\04_APPA\APPA.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
