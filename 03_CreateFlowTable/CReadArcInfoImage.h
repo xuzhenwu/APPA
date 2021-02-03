@@ -69,12 +69,12 @@ void	CReadArcInfoImages::input_prompt(int maxr, int maxc, char *filename, char *
 	strcpy(fntable, filename);
 	strcpy(fnsubbasin, filename);
 
-	cout << "read .patch, .dem, .stream file:";
+	cout << "read .gridid, .dem, .stream file:";
 
 	// append '.' extensions to each filename (these should be generalized)
 	strcat(fndem, ".dem");
 	strcat(fnslope, ".slope");
-	strcat(fnpatch, ".patch");
+	strcat(fnpatch, ".gridid");
 	strcat(fnsubbasin, ".subbasin");
 
 

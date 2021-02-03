@@ -9,7 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02_CreateGridsID", "02_Crea
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03_CreateFlowTable", "03_CreateFlowTable\03_CreateFlowTable.vcxproj", "{DA7170C0-55CF-4D7B-8425-25A0C3AED9FE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "04_APPA", "04_APPA\ASP.vcxproj", "{0C7491A7-D155-4422-A20D-AFB154C5154C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "04_APPA", "04_APPA\04_APPA.vcxproj", "{0C7491A7-D155-4422-A20D-AFB154C5154C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

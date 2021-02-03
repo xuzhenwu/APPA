@@ -14,18 +14,20 @@ using namespace std;
 struct patch_struct* read_flow_table(struct patch_struct *patch, char *flowtable_in,struct inf *INF) {
 
 
-	cout << "read flow routing information:" ;
+	cout << "read flow routing information:\n" ;
 
 	ifstream FlowTable(flowtable_in, ios::in);
+	if (!FlowTable.is_open()) {
+		cout << "unable to open flow routing file: " << flowtable_in << '\n' << endl;
+		exit(0);
+	}
 
-	//3 rest_numAD FLOW TABLE
 	FlowTable >> INF->patch_num;//skip first patch num value
 	
 	int patch_num = INF->patch_num;
 
 	//allco memory
 	patch= new struct patch_struct[patch_num]{};
-
 	for (int pch = 0; pch != patch_num; pch++) {
 
 		//read first line parameters
