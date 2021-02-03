@@ -34,7 +34,7 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="APPA.cpp" />
-    <ClCompile Include="hillslope_parallel_subset.cpp">
+    <ClCompile Include="hillslope_parallel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

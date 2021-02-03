@@ -163,7 +163,7 @@
   <ItemGroup>
     <ClCompile Include="init_channel_parallel.cpp" />
     <ClCompile Include="update_channel_parallel_within_layer.cpp" />
-    <ClCompile Include="hillslope_parallel_subset.cpp">
+    <ClCompile Include="hillslope_parallel.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
