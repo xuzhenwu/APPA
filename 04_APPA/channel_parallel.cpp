@@ -11,7 +11,7 @@
 
 using namespace std;
 
-void channel_parallel(struct patch_struct *patch, double Tchm, int threads, struct inf* INF,int out_flag) {
+void channel_parallel(struct patch_object* patch, double Tchm, int threads, struct status_information* INF) {
 
 	//=======================================================================================================================
 	//1. LOCAL VARS(JUST SKIP IF YOU DONT WANT TO rest_numAD ABOUT IT)
@@ -27,7 +27,7 @@ void channel_parallel(struct patch_struct *patch, double Tchm, int threads, stru
 	//1.1 compute INF information
 	double smallest_unit = infinite;
 	INF->channel_num = 0;
-	INF->partitioned_num = 0;
+	INF->TOV = 0;
 	INF->rest_num = 0;
 	for (int pch = 0; pch != INF->patch_num; pch++) {
 
@@ -42,7 +42,7 @@ void channel_parallel(struct patch_struct *patch, double Tchm, int threads, stru
 						smallest_unit = patch[pch].re_channel_acc;
 				}
 			if (patch[pch].channel_state != 0)
-				INF->partitioned_num++;
+				INF->TOV++;
 			else
 				INF->rest_num++;
 		}
@@ -210,26 +210,23 @@ void channel_parallel(struct patch_struct *patch, double Tchm, int threads, stru
 		}
 	}
 
-	//compute hsr
-	TAM = 0;
-	double TV = 0;
-
-	//search for max
+	// compute ESRch
+	INF->TOV = 0;
+	double max_TOi = 0;
 	for (thread_inx = 0; thread_inx != threads; thread_inx++) {
-		INF->TAi[thread_inx] = Tchm - INF->TAi[thread_inx];
-		TV += INF->TAi[thread_inx];
-		if (INF->TAi[thread_inx] > TAM)
-			TAM = INF->TAi[thread_inx];
+		INF->TOi[thread_inx] = Tchm - INF->TAi[thread_inx];
+		INF->TOV += INF->TOi[thread_inx];
+		if (INF->TOi[thread_inx] > max_TOi)
+			max_TOi = INF->TOi[thread_inx];
 	}
-	INF->SR=INF->CSR = TV /TAM;
+	INF->ESRch = INF->TOV / max_TOi;
 
-	//might be deleted in time of next check
+	// compute rest_num
 	INF->rest_num = 0;
 	for (int pch = 0; pch != INF->patch_num; pch++) {
 		if (patch[pch].landID == 1 && patch[pch].channel_state == 0)
 			INF->rest_num++;
 	}
-	INF->partitioned_num = INF->channel_num - INF->rest_num - INF->partitioned_num;
 
 	//free memory
 	for (int i = 0; i < threads; ++i)

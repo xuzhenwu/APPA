@@ -11,8 +11,11 @@
 
 using namespace std;
 
-void update_channel_parallel_within_layer(struct patch_struct *patch, int patch_num, int layer, int init_flag) {
+void update_channel_parallel_within_layer(struct patch_object *patch, int layer, int init_flag, struct status_information* INF) {
 
+	int patch_num = INF->patch_num;
+
+	// change status
 	if (init_flag == 0)//renew transient state
 		for (int pch = 0; pch != patch_num; pch++) {
 			//init re_acc_area
@@ -44,6 +47,7 @@ void update_channel_parallel_within_layer(struct patch_struct *patch, int patch_
 		}
 
 	
+	// recompute channel_acc
 	for (int pch = 0; pch != patch_num; pch++) {
 
 		if (patch[pch].channel_state == 0 && patch[pch].landID == 1)	

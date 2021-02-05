@@ -11,7 +11,8 @@
 
 using namespace std;
 
-struct patch_struct* read_flow_table(struct patch_struct *patch, char *flowtable_in,struct inf *INF) {
+struct patch_object* read_flow_table(char* flowtable_in, struct status_information* INF)
+{
 
 
 	cout << "read flow routing information:\n" ;
@@ -27,7 +28,7 @@ struct patch_struct* read_flow_table(struct patch_struct *patch, char *flowtable
 	int patch_num = INF->patch_num;
 
 	//allco memory
-	patch= new struct patch_struct[patch_num]{};
+	struct patch_object* patch= new struct patch_object[patch_num]{};
 	for (int pch = 0; pch != patch_num; pch++) {
 
 		//read first line parameters
@@ -141,7 +142,7 @@ struct patch_struct* read_flow_table(struct patch_struct *patch, char *flowtable
 		}
 	}
 	//compute theoretical maximum speedup ratio of chanel processes
-	INF->tmsr_ch = total / (llength);
+	INF->TMSRch = total / (llength);
 
 	cout << "complete\n" << endl;
 	return (patch);//return the point of the patch array

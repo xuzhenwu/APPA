@@ -11,7 +11,7 @@
 
 using namespace std;
 
-void print_threads_map(struct patch_struct *patch,char *geo_files,char *threads_out, int patch_num, int thread, int print_flag, int tail_flag) {
+void print_threads_map(struct patch_object *patch,char *geo_files,char *threads_out, int patch_num, int thread, int print_flag, int tail_flag) {
 
 	//read .patch file 
 	//add a tail

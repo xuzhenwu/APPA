@@ -11,7 +11,7 @@
 
 using namespace std;
 
-void init_channel_parallel(struct patch_struct *patch, struct inf *INF) {
+void init_channel_parallel(struct patch_object* patch, struct status_information* INF){
 
 
 	//prepare channel information
@@ -24,8 +24,6 @@ void init_channel_parallel(struct patch_struct *patch, struct inf *INF) {
 			patch[pch].lock_state = 0;
 
 	}
-
-	//prepare INF information
 
 	return;
 }

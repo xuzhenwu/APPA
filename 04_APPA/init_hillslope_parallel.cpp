@@ -11,7 +11,7 @@
 
 using namespace std;
 
-void init_hillslope_parallel(struct patch_struct *patch,struct inf* INF) {
+void init_hillslope_parallel(struct patch_object* patch, struct status_information* INF){
 
 	for (int pch = 0; pch != INF->patch_num; pch++) {
 		//init re_acc_area

@@ -37,9 +37,18 @@
     <ClCompile Include="hillslope_parallel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="hillslope_parallel_all.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="channel_parallel_all.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="print_information.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\hideinsubtropicalforest\APPA\04_APPA\APPA.h">
+    <ClInclude Include="APPA.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
