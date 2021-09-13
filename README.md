@@ -42,5 +42,4 @@ for (jlayer = 0; jlayer < nlayer; jlayer++){//nlayer is the number of layers
 ```
 
 ## References
-
-Xu, Z., Tang, G., Jiang, T., Chen, X., Chen, T., & Niu, X. (2021). An automatic partition-based parallel algorithm for grid-based distributed hydrological models. Environmental Modelling & Software, 105142. https://doi.org/https://doi.org/10.1016/j.envsoft.2021.105142
+Xu, Z., Tang, G., Jiang, T., Chen, X., Chen, T., & Niu, X. (2021). An automatic partition-based parallel algorithm for grid-based distributed hydrological models. Environmental Modelling & Software, 144, 105142. https://doi.org/10.1016/j.envsoft.2021.105142
